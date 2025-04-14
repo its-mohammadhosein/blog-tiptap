@@ -13,4 +13,13 @@ model User {
   password       String    // Store hashed passwords only!
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  posts     Post[]
+}
+model Post {
+  id        String   @id @default(uuid())
+  title     String
+  content   Json     // JSON field for storing structured content
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
 }
