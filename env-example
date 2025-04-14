@@ -1,0 +1,4 @@
+
+DATABASE_URL="your-postgresql-address"
+NEXTAUTH_SECRET="opensslrand64-32"
+NEXTAUTH_URL="yourDeployAddress"
