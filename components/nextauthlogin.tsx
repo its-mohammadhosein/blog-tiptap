@@ -1,3 +1,4 @@
+'use client'
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +40,7 @@ export function LoginForm({
       setError(result.error);
       setIsLoading(false);
     } else {
-      router.push("/"); // Redirect to home page after successful login
+      router.push("/dashboard"); // Redirect to home page after successful login
     }
   };
 
