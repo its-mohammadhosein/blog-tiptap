@@ -1,14 +1,21 @@
 "use client";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { HardBreak } from "@tiptap/extension-hard-break";
 import MenuBar from "./menuBar";
-import { ListItem } from "@tiptap/extension-list-item";
 // import Heading from "@tiptap/extension-heading";
 import {
   CustomBulletList,
+  // CustomExtension,
   CustomHeading,
   CustomListItem,
   CustomOrderedList,
+  // FaqItem,
+  // FaqGroup,
+  FaqQuestion,
+  FaqAnswer,
+  FaqSingleItem,
+  // FaqExtension,
 } from "@/app/lib/tiptapExtensions";
 interface RichTextEditorProps {
   initialContent?: string;
@@ -16,27 +23,27 @@ interface RichTextEditorProps {
 }
 
 const Tiptap = ({
-  initialContent = ` <ul>
-    <li>First item</li>
-    <li>Second item</li>
-  </ul>`,
+  initialContent = ``,
   onChange,
 }: RichTextEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        listItem: false,
-        bulletList: false,
-        orderedList: false,
+        // listItem: true, // Enable these temporarily for debugging
+        // bulletList: true,
+        // orderedList: true,
+        paragraph: {}, // Ensure paragraph is included
+        hardBreak: {}, // Ensure hard_break is included
       }),
+      HardBreak,
       CustomListItem,
       CustomBulletList,
       CustomOrderedList,
-      
+      FaqQuestion, // Ensure this extension is implemented correctly
+      FaqAnswer,
+      FaqSingleItem,
       CustomHeading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
     ],
-    immediatelyRender: false,
-
     editorProps: {
       attributes: {
         class: "min-h-[150px] border focus:outline-none rounded-xl p-4",
@@ -44,8 +51,12 @@ const Tiptap = ({
     },
     content: initialContent,
     onUpdate: ({ editor }) => {
-      if (onChange) {
-        onChange(editor.getHTML());
+      try {
+        if (onChange) {
+          onChange(editor.getHTML());
+        }
+      } catch (error) {
+        console.error("Error in onUpdate:", error);
       }
     },
   });

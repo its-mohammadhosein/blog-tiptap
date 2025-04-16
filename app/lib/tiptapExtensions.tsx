@@ -3,6 +3,8 @@ import Heading from "@tiptap/extension-heading";
 import { ListItem } from "@tiptap/extension-list-item";
 import { GoDotFill } from "react-icons/go";
 // import "@tiptap/core"
+import { Button } from "@/components/ui/button";
+import OrderedList from "@tiptap/extension-ordered-list";
 import {
   CommandProps,
   Extension,
@@ -11,14 +13,18 @@ import {
   NodeViewContent,
   NodeViewProps,
   NodeViewWrapper,
-  RawCommands,
   ReactNodeViewRenderer,
 } from "@tiptap/react";
-import React from "react";
 import { twMerge } from "tailwind-merge";
-import { Button } from "@/components/ui/button";
-import OrderedList from "@tiptap/extension-ordered-list";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  EditorState,
+  Plugin,
+  Selection,
+  TextSelection,
+  Transaction,
+} from "@tiptap/pm/state";
+import { keymap } from "@tiptap/pm/keymap";
+// import { faqtComp } from "@/components/faqItem";
 // Custom Heading
 export const CustomHeading = Heading.extend({
   addNodeView() {
@@ -88,15 +94,23 @@ export const CustomListItem = ListItem.extend({
 });
 
 const CustomListItemComponent = ({ node, editor, getPos }: NodeViewProps) => {
-  const parentNodeType = editor.state.doc.resolve(getPos()).parent.type.name;
+  let parentNodeType = null;
+  let index = 0;
+
+  try {
+    const resolved = editor.state.doc.resolve(getPos());
+    parentNodeType = resolved.parent.type.name;
+    index = resolved.index(); // Get the correct position (0-based)
+  } catch (error) {
+    console.error(
+      "Error resolving position in CustomListItemComponent:",
+      error
+    );
+  }
+
   const isBulletList = parentNodeType === "bulletList";
   const isOrderedList = parentNodeType === "orderedList";
 
-  const count = editor.storage.orderedList.count;
-
-  const resolved = editor.state.doc.resolve(getPos());
-
-  const index = resolved.index(); // THIS gives you the correct position (0-based)
   return (
     <NodeViewWrapper
       as="li"
@@ -114,7 +128,7 @@ const CustomListItemComponent = ({ node, editor, getPos }: NodeViewProps) => {
       ) : null}
 
       <NodeViewContent
-        data-set={editor.storage.orderedList.count}
+        data-set={editor.storage.orderedList?.count || 0}
         className="flex-1"
       />
     </NodeViewWrapper>
@@ -151,7 +165,7 @@ export const CustomOrderedList = OrderedList.extend({
     };
   },
   onUpdate() {
-    console.log(this.editor.$node);
+    // console.log(this.editor.$node);
   },
   addNodeView() {
     return ReactNodeViewRenderer(CustomOrderedlistComponent);
@@ -160,48 +174,182 @@ export const CustomOrderedList = OrderedList.extend({
 
 // Faq
 
-// declare module "@tiptap/core" {
-//   interface Commands<ReturnType> {
-//     faqItem: {
-//       insertFAQ: () => ReturnType;
-//     };
-//   }
-// }
-export const CustomExtension = Extension.create({
-  // Your configuration will go here
-  name: "faqItem", // Unique identifier
-  group: "block", // Belongs to the 'block' group
-  content: "paragraph+", // Allows one or more paragraphs inside
-  defining: true, // Ensures it's treated as a block
+export const FaqQuestion = Node.create({
+  name: "faqQuestion",
+  group: "block",
+  content: "text*",
 
-  // Add this to enforce structure (optional but recommended)
   parseHTML() {
-    return [{ tag: 'div[data-type="faq-item"]' }];
-  },
-  renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, string> }) {
-    return ["div", { ...HTMLAttributes, "data-type": "faq-item" }, 0];
+    return [{ tag: "faq-question" }];
   },
 
-  // Commands (fixed)
+  renderHTML({ HTMLAttributes }) {
+    return ["faq-question", HTMLAttributes, 0];
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      keymap({
+        Enter(state, dispatch) {
+          const { $from } = state.selection;
+          const parent = $from.node(-1);
+
+          if (!parent || parent.type.name !== "faqSingleItem") return false;
+
+          const faqItemPos = $from.before(-1);
+          const faqQuestionNode = parent.child(0);
+
+          if (!faqQuestionNode) return false;
+
+          const targetPos = faqItemPos + faqQuestionNode.nodeSize + 1;
+
+          if (dispatch) {
+            const selection = Selection.near(state.doc.resolve(targetPos));
+            dispatch(state.tr.setSelection(selection).scrollIntoView());
+            return true;
+          }
+
+          return false;
+        },
+      }),
+    ];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(() => (
+      <NodeViewWrapper as="div" className="faq-question">
+        <label contentEditable={false}>Question:</label>
+        <div className="bg-white/60 p-1 text-black rounded-md mx-2">
+          <NodeViewContent />
+        </div>
+      </NodeViewWrapper>
+    ));
+  },
+});
+// FaqAnswer Node Definition
+export const FaqAnswer = Node.create({
+  name: "faqAnswer",
+  group: "block",
+  content: "text*",
+
+  parseHTML() {
+    return [{ tag: "faq-answer" }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["faq-answer", mergeAttributes(HTMLAttributes), 0];
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      keymap({
+        // Enter(state, dispatch) {
+        //   const { $from } = state.selection;
+        //   const parent = $from.node(-1);
+        //   if (!parent || parent.type.name !== 'faqSingleItem') return false;
+        //   const isAtEnd =
+        //     $from.parentOffset === $from.parent.content.size &&
+        //     $from.index($from.depth - 1) === parent.childCount - 1;
+        //   if (!isAtEnd) return false;
+        //   const posAfterFaq = $from.after(-1);
+        //   if (dispatch) {
+        //     const tr = state.tr.insert(
+        //       posAfterFaq,
+        //       state.schema.nodes.paragraph.create()
+        //     );
+        //     const resolvedPos = tr.doc.resolve(posAfterFaq);
+        //     const newSelection = TextSelection.near(resolvedPos);
+        //     dispatch(tr.setSelection(newSelection).scrollIntoView());
+        //   }
+        //   return true;
+        // },
+      }),
+    ];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(() => (
+      <NodeViewWrapper className="faq-answer">
+        <label contentEditable={false}>Answer:</label>
+        <div className="bg-white/60 p-1 text-black rounded-md mx-2">
+          <NodeViewContent />
+        </div>
+      </NodeViewWrapper>
+    ));
+  },
+});
+// // FaqSingleItem Node Definition (Wraps both faqQuestion and faqAnswer)
+// import { Node } from '@tiptap/core'
+// import { ReactNodeViewRenderer } from '@tiptap/react'
+// import { NodeViewWrapper, NodeViewContent } from '@tiptap/react'
+// import { keymap } from 'prosemirror-keymap'
+// import { Selection } from '@tiptap/pm/state'
+
+export const FaqSingleItem = Node.create({
+  name: "faqSingleItem",
+  group: "block",
+  content: "faqQuestion faqAnswer",
+
+  parseHTML() {
+    return [{ tag: "faq-single-item" }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["faq-single-item", mergeAttributes(HTMLAttributes), 0];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(() => (
+      <NodeViewWrapper className="faq-single-item p-2 rounded border-purple-400 bg-blue-800 text-white">
+        <NodeViewContent />
+      </NodeViewWrapper>
+    ));
+  },
+
   addCommands() {
     return {
-      insertFAQ:
+      insertFaqSingleItem:
         () =>
-        ({ commands }: { commands: CommandProps["commands"] }) => {
+        ({ commands }) => {
           return commands.insertContent({
-            type: this.name,
+            type: "faqSingleItem",
             content: [
               {
-                type: "paragraph",
-                content: [{ type: "text", text: "Question:" }],
+                type: "faqQuestion",
+                content: [{ type: "text", text: "Type your question here" }],
               },
               {
-                type: "paragraph",
-                content: [{ type: "text", text: "Answer:" }],
+                type: "faqAnswer",
+                content: [{ type: "text", text: "Type your answer here" }],
               },
             ],
           });
         },
-    } as unknown as Record<string, any>; // Type assertion for Tiptap compatibility
+    };
   },
+
+  addKeyboardShortcuts() {
+    return {
+      "Mod-Alt-f": () => this.editor.commands.insertFaqSingleItem(),
+    };
+  },
+
+  // addProseMirrorPlugins() {
+  //   return [
+  //     new Plugin({
+  //       props: {
+  //         handleKeyDown: (view, event) => {
+  //           if (event.key === 'Enter') {
+  //             const { $from } = view.state.selection;
+  //             if ($from.node(-1)?.type?.name === this.name) {
+  //               event.preventDefault();
+  //               return true;
+  //             }
+  //           }
+  //           return false;
+  //         },
+  //       },
+  //     }),
+  //   ];
+  // },
 });

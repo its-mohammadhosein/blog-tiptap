@@ -85,7 +85,7 @@ export default function MenuBar({ editor }: prop) {
       type: "single",
       icon: <FaQuestion />,
       command: () => {
-        editor.chain().focus().toggleOrderedList().run();
+        editor.chain().focus().insertFaqSingleItem().run(); 
       },
     },
   ];
