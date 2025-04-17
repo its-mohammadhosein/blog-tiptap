@@ -1,3 +1,4 @@
+'use client'
 import { Editor } from "@tiptap/react";
 import {
   LuHeading,
@@ -9,19 +10,20 @@ import {
   LuHeading6,
 } from "react-icons/lu";
 
-import { MdFormatBold, MdFormatListBulleted } from "react-icons/md";
 import { FaListOl, FaQuestion } from "react-icons/fa";
+import { MdFormatBold, MdFormatListBulleted, MdOutlineImage } from "react-icons/md";
 
+import { GoItalic } from "react-icons/go";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { GoItalic } from "react-icons/go";
+import ImageChoosing from "./imageUpload";
+import { useState } from "react";
 interface prop {
   editor: Editor | null;
 }
@@ -38,6 +40,7 @@ interface MenubarItems2 {
 }
 type MenuItem = MenubarItems1 | MenubarItems2;
 export default function MenuBar({ editor }: prop) {
+  const [Open, setOpen] = useState<boolean>(false);
   if (!editor) {
     return null;
   }
@@ -88,7 +91,16 @@ export default function MenuBar({ editor }: prop) {
         editor.chain().focus().insertFaqSingleItem().run(); 
       },
     },
+    {
+      id: 7,
+      type: "single",
+      icon: <MdOutlineImage />,
+      command: () => {
+        setOpen(!Open)
+      },
+    },
   ];
+  
   return (
     <div className="menubar w-full h-[34px] bg-gray-100 rounded-xl mb-4">
       <div className=" flex items-center px-4 h-full w-max gap-4">
@@ -106,6 +118,7 @@ export default function MenuBar({ editor }: prop) {
             </Button>
           );
         })}
+        <ImageChoosing editor={editor} Value={Open}setValue={setOpen}/>
       </div>
     </div>
   );
@@ -172,3 +185,4 @@ const HeadingComponent = ({ editor }: { editor: Editor }) => {
     </DropdownMenu>
   );
 };
+

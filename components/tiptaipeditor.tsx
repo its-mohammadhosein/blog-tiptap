@@ -1,4 +1,5 @@
 "use client";
+import Image from '@tiptap/extension-image'
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { HardBreak } from "@tiptap/extension-hard-break";
@@ -35,6 +36,7 @@ const Tiptap = ({
         paragraph: {}, // Ensure paragraph is included
         hardBreak: {}, // Ensure hard_break is included
       }),
+      Image,
       HardBreak,
       CustomListItem,
       CustomBulletList,
