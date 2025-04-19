@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import {
   Drawer,
   DrawerClose,
@@ -17,7 +17,22 @@ import * as z from "zod";
 import { useDropzone } from "react-dropzone";
 import { UploadCloud, X } from "lucide-react";
 import { Editor } from "@tiptap/core";
-
+import Image from "next/image";
+interface imageList {
+  id: number;
+  fileName: string;
+  filePath: string;
+  fileSize: number;
+  mimeType: "image/png";
+  createdAt: string;
+  updatedAt: string;
+}
+export interface imageListRespons {
+  page: number;
+  page_size: number;
+  total: number;
+  result: imageList[];
+}
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -46,6 +61,7 @@ export default function ImageChoosing({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [Images, setImages] = useState<imageList[]>();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -128,6 +144,19 @@ export default function ImageChoosing({
     }
   };
 
+  useEffect(() => {
+    const fetchImages = async () => {
+      const images = await fetch("http://localhost:3000/api/upload/image");
+      if (images.ok) {
+        const data = (await images.json()) as imageListRespons;
+        console.log("images are herer", data);
+
+        setImages(data.result);
+      }
+    };
+    fetchImages();
+  }, []);
+
   const removeFile = () => {
     form.resetField("image");
     setUploadError(null);
@@ -135,9 +164,6 @@ export default function ImageChoosing({
 
   return (
     <Drawer open={Value} onOpenChange={setValue}>
-      <DrawerTrigger asChild>
-        <Button variant="outline">Upload Image</Button>
-      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <div className="w-full flex flex-col items-center gap-5">
@@ -147,7 +173,6 @@ export default function ImageChoosing({
             </DrawerDescription>
           </div>
         </DrawerHeader>
-
         <div className="w-full min-h-[350px] p-4">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div
@@ -205,8 +230,33 @@ export default function ImageChoosing({
             )}
           </form>
         </div>
-
         <DrawerFooter>
+          <div className="w-full h-[50px] flex justify-evenly">
+            {Images?.map((item) => {
+              console.log(item);
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    editor
+                      .chain()
+                      .focus()
+                      .setImage({ src: item.filePath, alt: item.fileName }).run();
+                  }}
+                  className="flex items-center gap-3 p-3 bg border rounded-xl"
+                >
+                  <Image
+                    src={item.filePath}
+                    alt="Image"
+                    width={300}
+                    height={300}
+                    className="w-[50px] h-auto"
+                  />
+                </div>
+              );
+            })}
+          </div>
           <Button
             onClick={form.handleSubmit(onSubmit)}
             disabled={!selectedFile || form.formState.isSubmitting}

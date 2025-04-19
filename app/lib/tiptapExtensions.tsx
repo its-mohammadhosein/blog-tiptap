@@ -5,9 +5,9 @@ import { GoDotFill } from "react-icons/go";
 // import "@tiptap/core"
 import { Button } from "@/components/ui/button";
 import OrderedList from "@tiptap/extension-ordered-list";
+import { keymap } from "@tiptap/pm/keymap";
+import { Selection } from "@tiptap/pm/state";
 import {
-  CommandProps,
-  Extension,
   mergeAttributes,
   Node,
   NodeViewContent,
@@ -16,14 +16,7 @@ import {
   ReactNodeViewRenderer,
 } from "@tiptap/react";
 import { twMerge } from "tailwind-merge";
-import {
-  EditorState,
-  Plugin,
-  Selection,
-  TextSelection,
-  Transaction,
-} from "@tiptap/pm/state";
-import { keymap } from "@tiptap/pm/keymap";
+import Image from "@tiptap/extension-image";
 // import { faqtComp } from "@/components/faqItem";
 // Custom Heading
 export const CustomHeading = Heading.extend({
@@ -278,12 +271,6 @@ export const FaqAnswer = Node.create({
     ));
   },
 });
-// // FaqSingleItem Node Definition (Wraps both faqQuestion and faqAnswer)
-// import { Node } from '@tiptap/core'
-// import { ReactNodeViewRenderer } from '@tiptap/react'
-// import { NodeViewWrapper, NodeViewContent } from '@tiptap/react'
-// import { keymap } from 'prosemirror-keymap'
-// import { Selection } from '@tiptap/pm/state'
 
 export const FaqSingleItem = Node.create({
   name: "faqSingleItem",
@@ -352,4 +339,20 @@ export const FaqSingleItem = Node.create({
   //     }),
   //   ];
   // },
+});
+
+// Image
+const customImageView = ({ node, editor, getPos }: NodeViewProps) => {
+  return (
+    <NodeViewWrapper>
+      <div className="w-full h-auto">
+        <NodeViewContent />
+      </div>
+    </NodeViewWrapper>
+  );
+};
+export const ImageExtension = Image.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(customImageView);
+  },
 });

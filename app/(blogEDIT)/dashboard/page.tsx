@@ -9,34 +9,37 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { Post } from "@prisma/client";
 
-type Post = {
-  id: string;
-  title: string;
-  author: {
-    name: string | null;
-    email: string;
-  };
-  createdAt: Date;
-  published: boolean;
-};
+// type Post = {
+//   id: string;
+//   title: string;
+//   author: {
+//     name: string | null;
+//     email: string;
+//   };
+//   createdAt: Date;
+//   published: boolean;
+// };
 
 type PostsTableProps = {
   posts: Post[];
 };
-const posts: Post[] = [
-  {
-    id: "1",
-    title: "",
-    author: {
-      name: null,
-      email: "",
-    },
-    createdAt: new Date("2020-01-01T00:00:00Z"),
-    published: false,
-  },
-];
-export default function page() {
+export type PostWithAuthor = Post & {
+  author: { email: string };
+};
+
+type Props = {
+  posts: PostWithAuthor[];
+};
+
+export default async function page() {
+  const res = await fetch("http://localhost:3000/api/blog/post"); // Adjust the base URL if needed
+  if (!res.ok) {
+    throw new Error("Failed to fetch posts");
+  }
+
+  const posts = (await res.json()) as PostWithAuthor[];
   return (
     <div className="max-w-6xl mx-auto py-8">
       <Table className="bg-card rounded-lg border">
@@ -56,12 +59,12 @@ export default function page() {
               <TableCell>
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    post.published
+                    false
                       ? "bg-green-100 text-green-800"
                       : "bg-yellow-100 text-yellow-800"
                   }`}
                 >
-                  {post.published ? "Published" : "Draft"}
+                  {false ? "Published" : "Draft"}
                 </span>
               </TableCell>
               <TableCell className="font-medium">
@@ -74,23 +77,17 @@ export default function page() {
               </TableCell>
               <TableCell>
                 <div className="flex flex-col">
-                  <span>{post.author.name || "Unknown"}</span>
+                  <span>{"Unknown"}</span>
                   <span className="text-xs text-muted-foreground">
                     {post.author.email}
                   </span>
                 </div>
               </TableCell>
-              <TableCell>
-                {post.createdAt.toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </TableCell>
+              <TableCell>{`${post.createdAt}`}</TableCell>
               <TableCell className="text-right">
                 <Link
                   prefetch={false}
-                  href={`/dashboard/${post.id}/edit`}
+                  href={`/dashboard/${post.slug}/edit`}
                   className={buttonVariants({ variant: "ghost", size: "sm" })}
                 >
                   Edit
