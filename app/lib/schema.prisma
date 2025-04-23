@@ -20,7 +20,7 @@ model Post {
   id        Int      @id @default(autoincrement())
   title     String
   slug      String   @unique
-  content   Json
+  content   String
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
   createdAt DateTime @default(now())
