@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { RichTextEditor } from "@/app/test/rich-text-editor";
 import { useDebounceFn, useSafeState } from "ahooks";
 import { Button } from "antd";
@@ -12,7 +12,7 @@ export default function Page() {
     },
     { wait: 500 } // Added debounce delay (optional but recommended)
   );
-  
+
   return (
     <div className="w-full h-screen flex justify-center">
       <div className="max-w-[1280px] w-full min-h-[450px] mt-12">
