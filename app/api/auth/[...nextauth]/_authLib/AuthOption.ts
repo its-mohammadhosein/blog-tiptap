@@ -2,7 +2,10 @@ import { Prisma } from "@/app/lib/Prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-export const authOptions = {
+import { AuthOptions } from "next-auth"; // <-- import AuthOptions
+import { JWT } from "next-auth/jwt";      // <-- import JWT
+
+export const authOptions: AuthOptions = { // <-- type your authOptions
   adapter: PrismaAdapter(Prisma),
   providers: [
     CredentialsProvider({
@@ -33,11 +36,29 @@ export const authOptions = {
           throw new Error("Invalid credentials");
         }
 
-        return user;
+        return {
+          id: user.id, // Only return id
+          email: user.email,
+          role: user.role, // ✅ EXPLICITLY returning role
+        };
       },
     }),
   ],
-  callbacks:{
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user?: any }) {
+      if (user) {
+        token.userId = user.id;
+        token.role = user.role; // <--- ADD THIS
+      }
+      return token;
+    },
+    async session({ session, token }: { session: any; token: JWT }) {
+      if (token) {
+        session.userId = token.userId;
+        session.role = token.role; // <--- ADD THIS
+      }
+      return session;
+    },
   },
   secret: process.env.NEXTAUTH_SECRET!,
   session: {
@@ -46,5 +67,4 @@ export const authOptions = {
   pages: {
     signIn: "/login",
   },
-  
 };

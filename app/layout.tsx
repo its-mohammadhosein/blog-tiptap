@@ -1,8 +1,9 @@
+import JotaiProvider from "@/components/jotaiProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import JotaiProvider from "@/components/jotaiProvider";
 import localFont from "next/font/local";
+import "./globals.css";
+import NextAuthSessionProvider from "@/components/NextauthProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -43,7 +44,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${vazir.className} antialiased`}
       >
-        <JotaiProvider>{children}</JotaiProvider>
+        <NextAuthSessionProvider>
+          <JotaiProvider>{children}</JotaiProvider>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );

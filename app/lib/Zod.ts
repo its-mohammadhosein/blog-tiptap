@@ -7,6 +7,7 @@ export const PostSchema = z.object({
   authorId: z.union([z.string(), z.number()], {
     required_error: "Author ID is required",
   }),
+  slug:z.string().optional()
 });
 
 // Optional: Export inferred TypeScript type

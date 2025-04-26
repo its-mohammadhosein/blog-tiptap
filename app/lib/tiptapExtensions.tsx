@@ -171,7 +171,7 @@ export const FaqQuestion = Node.create({
   name: "faqQuestion",
   group: "block",
   content: "text*",
-
+  isolating: true, // << Add this!
   parseHTML() {
     return [{ tag: "faq-question" }];
   },
@@ -224,7 +224,7 @@ export const FaqAnswer = Node.create({
   name: "faqAnswer",
   group: "block",
   content: "text*",
-
+  isolating: true, // << Add this too!
   parseHTML() {
     return [{ tag: "faq-answer" }];
   },
@@ -234,30 +234,7 @@ export const FaqAnswer = Node.create({
   },
 
   addProseMirrorPlugins() {
-    return [
-      keymap({
-        // Enter(state, dispatch) {
-        //   const { $from } = state.selection;
-        //   const parent = $from.node(-1);
-        //   if (!parent || parent.type.name !== 'faqSingleItem') return false;
-        //   const isAtEnd =
-        //     $from.parentOffset === $from.parent.content.size &&
-        //     $from.index($from.depth - 1) === parent.childCount - 1;
-        //   if (!isAtEnd) return false;
-        //   const posAfterFaq = $from.after(-1);
-        //   if (dispatch) {
-        //     const tr = state.tr.insert(
-        //       posAfterFaq,
-        //       state.schema.nodes.paragraph.create()
-        //     );
-        //     const resolvedPos = tr.doc.resolve(posAfterFaq);
-        //     const newSelection = TextSelection.near(resolvedPos);
-        //     dispatch(tr.setSelection(newSelection).scrollIntoView());
-        //   }
-        //   return true;
-        // },
-      }),
-    ];
+    return [keymap({})];
   },
 
   addNodeView() {
@@ -276,7 +253,7 @@ export const FaqSingleItem = Node.create({
   name: "faqSingleItem",
   group: "block",
   content: "faqQuestion faqAnswer",
-
+  selectable: true, // << Add this line
   parseHTML() {
     return [{ tag: "faq-single-item" }];
   },
@@ -317,28 +294,10 @@ export const FaqSingleItem = Node.create({
 
   addKeyboardShortcuts() {
     return {
+      ...this.parent?.(),
       "Mod-Alt-f": () => this.editor.commands.insertFaqSingleItem(),
     };
   },
-
-  // addProseMirrorPlugins() {
-  //   return [
-  //     new Plugin({
-  //       props: {
-  //         handleKeyDown: (view, event) => {
-  //           if (event.key === 'Enter') {
-  //             const { $from } = view.state.selection;
-  //             if ($from.node(-1)?.type?.name === this.name) {
-  //               event.preventDefault();
-  //               return true;
-  //             }
-  //           }
-  //           return false;
-  //         },
-  //       },
-  //     }),
-  //   ];
-  // },
 });
 
 // Image

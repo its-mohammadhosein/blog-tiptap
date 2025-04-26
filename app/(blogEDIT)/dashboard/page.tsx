@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Post } from "@prisma/client";
+import { links } from "@/app/lib/links";
 
 // type Post = {
 //   id: string;
@@ -34,7 +35,7 @@ type Props = {
 };
 
 export default async function page() {
-  const res = await fetch("http://localhost:3000/api/blog/post"); // Adjust the base URL if needed
+  const res = await fetch(`${links.baseUrl}/api/blog/post`); // Adjust the base URL if needed
   if (!res.ok) {
     throw new Error("Failed to fetch posts");
   }

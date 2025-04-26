@@ -18,6 +18,7 @@ import { useDropzone } from "react-dropzone";
 import { UploadCloud, X } from "lucide-react";
 import { Editor } from "@tiptap/core";
 import Image from "next/image";
+import { links } from "@/app/lib/links";
 interface imageList {
   id: number;
   fileName: string;
@@ -146,7 +147,7 @@ export default function ImageChoosing({
 
   useEffect(() => {
     const fetchImages = async () => {
-      const images = await fetch("http://localhost:3000/api/upload/image");
+      const images = await fetch(`${links.baseUrl}/api/upload/image`);
       if (images.ok) {
         const data = (await images.json()) as imageListRespons;
         console.log("images are herer", data);
@@ -242,7 +243,8 @@ export default function ImageChoosing({
                     editor
                       .chain()
                       .focus()
-                      .setImage({ src: item.filePath, alt: item.fileName }).run();
+                      .setImage({ src: item.filePath, alt: item.fileName })
+                      .run();
                   }}
                   className="flex items-center gap-3 p-3 bg border rounded-xl"
                 >

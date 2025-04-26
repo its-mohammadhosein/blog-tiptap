@@ -1,5 +1,5 @@
-'use client'
-import * as React from 'react';
+"use client";
+import * as React from "react";
 
 import {
   AlignCenterOutlined,
@@ -11,6 +11,7 @@ import {
   ItalicOutlined,
   LinkOutlined,
   OrderedListOutlined,
+  QuestionOutlined,
   RedoOutlined,
   StrikethroughOutlined,
   TableOutlined,
@@ -18,38 +19,38 @@ import {
   UndoOutlined,
   UnorderedListOutlined,
   YoutubeOutlined,
-} from '@ant-design/icons';
-import { Color } from '@tiptap/extension-color';
-import type { ColorOptions } from '@tiptap/extension-color';
-import Highlight from '@tiptap/extension-highlight';
-import type { HighlightOptions } from '@tiptap/extension-highlight';
-import Image from '@tiptap/extension-image';
-import type { ImageOptions } from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import type { LinkOptions } from '@tiptap/extension-link';
-import ListItem from '@tiptap/extension-list-item';
-import Placeholder from '@tiptap/extension-placeholder';
-import type { PlaceholderOptions } from '@tiptap/extension-placeholder';
-import Table from '@tiptap/extension-table';
-import type { TableOptions } from '@tiptap/extension-table';
-import TableCell from '@tiptap/extension-table-cell';
-import type { TableCellOptions } from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import type { TableHeaderOptions } from '@tiptap/extension-table-header';
-import TableRow from '@tiptap/extension-table-row';
-import type { TableRowOptions } from '@tiptap/extension-table-row';
-import TextAlign from '@tiptap/extension-text-align';
-import type { TextAlignOptions } from '@tiptap/extension-text-align';
-import TextStyle from '@tiptap/extension-text-style';
-import type { TextStyleOptions } from '@tiptap/extension-text-style';
-import Underline from '@tiptap/extension-underline';
-import type { UnderlineOptions } from '@tiptap/extension-underline';
-import Youtube from '@tiptap/extension-youtube';
-import type { YoutubeOptions } from '@tiptap/extension-youtube';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import type { StarterKitOptions } from '@tiptap/starter-kit';
-import { useSafeState, useUpdateEffect } from 'ahooks';
+} from "@ant-design/icons";
+import type { ColorOptions } from "@tiptap/extension-color";
+import { Color } from "@tiptap/extension-color";
+import type { HighlightOptions } from "@tiptap/extension-highlight";
+import Highlight from "@tiptap/extension-highlight";
+import type { ImageOptions } from "@tiptap/extension-image";
+import Image from "@tiptap/extension-image";
+import type { LinkOptions } from "@tiptap/extension-link";
+import Link from "@tiptap/extension-link";
+import ListItem from "@tiptap/extension-list-item";
+import type { PlaceholderOptions } from "@tiptap/extension-placeholder";
+import Placeholder from "@tiptap/extension-placeholder";
+import type { TableOptions } from "@tiptap/extension-table";
+import Table from "@tiptap/extension-table";
+import type { TableCellOptions } from "@tiptap/extension-table-cell";
+import TableCell from "@tiptap/extension-table-cell";
+import type { TableHeaderOptions } from "@tiptap/extension-table-header";
+import TableHeader from "@tiptap/extension-table-header";
+import type { TableRowOptions } from "@tiptap/extension-table-row";
+import TableRow from "@tiptap/extension-table-row";
+import type { TextAlignOptions } from "@tiptap/extension-text-align";
+import TextAlign from "@tiptap/extension-text-align";
+import type { TextStyleOptions } from "@tiptap/extension-text-style";
+import TextStyle from "@tiptap/extension-text-style";
+import type { UnderlineOptions } from "@tiptap/extension-underline";
+import Underline from "@tiptap/extension-underline";
+import type { YoutubeOptions } from "@tiptap/extension-youtube";
+import Youtube from "@tiptap/extension-youtube";
+import { EditorContent, useEditor } from "@tiptap/react";
+import type { StarterKitOptions } from "@tiptap/starter-kit";
+import StarterKit from "@tiptap/starter-kit";
+import { useSafeState, useUpdateEffect } from "ahooks";
 import {
   Button,
   ColorPicker,
@@ -59,9 +60,11 @@ import {
   Popconfirm,
   Tooltip,
   Upload,
-} from 'antd';
-import ImgCrop from 'antd-img-crop';
+} from "antd";
+import ImgCrop from "antd-img-crop";
 
+import { cn } from "@/lib/utils";
+import { generateBase64 } from "../lib/utils/helpers";
 import {
   H1Icon,
   H2Icon,
@@ -76,27 +79,29 @@ import {
   TableRowInsertIcon,
   TableRowRemoveIcon,
   TextIcon,
-} from './common'
-import { cn } from '@/lib/utils';
-import { generateBase64 } from '../lib/utils/helpers';
-// import { cn, generateBase64 } from 
-
+} from "./common";
+// import { cn, generateBase64 } from
+import {
+  FaqAnswer,
+  FaqQuestion,
+  FaqSingleItem,
+} from "@/app/lib/tiptapExtensions";
 type EditorToolbarProps = {
   editor: NonNullable<ReturnType<typeof useEditor>>;
 };
 
 const EditorToolbar = ({ editor }: EditorToolbarProps) => {
-  const defaultHref = editor.getAttributes('link').href as string | undefined;
-  const defaultVideo = editor.getAttributes('youtube').src as
+  const defaultHref = editor.getAttributes("link").href as string | undefined;
+  const defaultVideo = editor.getAttributes("youtube").src as
     | string
     | undefined;
   const [href, setHref] = useSafeState(defaultHref);
   const [video, setVideo] = useSafeState(defaultVideo);
 
   const defaultButtonProps: React.ComponentPropsWithoutRef<typeof Button> = {
-    type: 'text',
-    size: 'small',
-    shape: 'circle',
+    type: "text",
+    size: "small",
+    shape: "circle",
   };
 
   useUpdateEffect(() => {
@@ -108,162 +113,162 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
   const editorChainPossibled = () => editorPossibled().chain().focus();
 
   return (
-    <Flex wrap='wrap' align='center' className='border-b p-3'>
-      <Tooltip title='عنوان اول'>
+    <Flex wrap="wrap" align="center" className="border-b p-3">
+      <Tooltip title="عنوان اول">
         <Button
           icon={<H1Icon />}
           className={cn(
-            editor.isActive('heading', { level: 1 })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive("heading", { level: 1 })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleHeading({ level: 1 }).run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='عنوان دوم'>
+      <Tooltip title="عنوان دوم">
         <Button
           icon={<H2Icon />}
           className={cn(
-            editor.isActive('heading', { level: 2 })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive("heading", { level: 2 })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleHeading({ level: 2 }).run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='عنوان سوم'>
+      <Tooltip title="عنوان سوم">
         <Button
           icon={<H3Icon />}
           className={cn(
-            editor.isActive('heading', { level: 3 })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive("heading", { level: 3 })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleHeading({ level: 3 }).run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='عنوان چهارم'>
+      <Tooltip title="عنوان چهارم">
         <Button
           icon={<H4Icon />}
           className={cn(
-            editor.isActive('heading', { level: 4 })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive("heading", { level: 4 })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleHeading({ level: 4 }).run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='عنوان پنجم'>
+      <Tooltip title="عنوان پنجم">
         <Button
           icon={<H5Icon />}
           className={cn(
-            editor.isActive('heading', { level: 5 })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive("heading", { level: 5 })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleHeading({ level: 5 }).run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='عنوان ششم'>
+      <Tooltip title="عنوان ششم">
         <Button
           icon={<H6Icon />}
           className={cn(
-            editor.isActive('heading', { level: 6 })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive("heading", { level: 6 })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleHeading({ level: 6 }).run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='پاراگراف'>
+      <Tooltip title="پاراگراف">
         <Button
           icon={<TextIcon />}
           className={cn(
-            editor.isActive('paragraph') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("paragraph") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           onClick={() => editorFocused().setParagraph().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Divider type='vertical' />
+      <Divider type="vertical" />
 
-      <Tooltip title='رنگ ها'>
+      <Tooltip title="رنگ ها">
         <ColorPicker
-          size='small'
-          className='!shadow-none'
-          defaultValue='var(--ant-color-text-base)'
-          value={editor.getAttributes('textStyle').color}
+          size="small"
+          className="!shadow-none"
+          defaultValue="var(--ant-color-text-base)"
+          value={editor.getAttributes("textStyle").color}
           onChange={(_, hex) => editorFocused().setColor(hex).run()}
         />
       </Tooltip>
-      <Tooltip title='پررنگ'>
+      <Tooltip title="پررنگ">
         <Button
           icon={<BoldOutlined />}
           className={cn(
-            editor.isActive('bold') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("bold") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           disabled={!editorChainPossibled().toggleBold().run()}
           onClick={() => editorFocused().toggleBold().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='مورب'>
+      <Tooltip title="مورب">
         <Button
           icon={<ItalicOutlined />}
           className={cn(
-            editor.isActive('italic') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("italic") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           disabled={!editorChainPossibled().toggleItalic().run()}
           onClick={() => editorFocused().toggleItalic().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='زیرخط'>
+      <Tooltip title="زیرخط">
         <Button
           icon={<UnderlineOutlined />}
           className={cn(
-            editor.isActive('underline') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("underline") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           disabled={!editorChainPossibled().toggleUnderline().run()}
           onClick={() => editorFocused().toggleUnderline().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='نادیده'>
+      <Tooltip title="نادیده">
         <Button
           icon={<StrikethroughOutlined />}
           className={cn(
-            editor.isActive('strike') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("strike") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           disabled={!editorChainPossibled().toggleStrike().run()}
           onClick={() => editorFocused().toggleStrike().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='برجسته'>
+      <Tooltip title="برجسته">
         <Button
           icon={<HighlightOutlined />}
           className={cn(
-            editor.isActive('highlight') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("highlight") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           disabled={!editorChainPossibled().toggleHighlight().run()}
           onClick={() => editorFocused().toggleHighlight().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Divider type='vertical' />
+      <Divider type="vertical" />
 
-      <Tooltip title='جدول'>
+      <Tooltip title="جدول">
         <Button
           icon={<TableOutlined />}
           className={cn(
-            editor.isActive('table') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("table") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           onClick={() =>
             editorFocused()
@@ -273,7 +278,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='افزودن ستون'>
+      <Tooltip title="افزودن ستون">
         <Button
           icon={<TableColumnInsertIcon />}
           disabled={!editorPossibled().addColumnAfter()}
@@ -281,7 +286,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='حذف ستون'>
+      <Tooltip title="حذف ستون">
         <Button
           icon={<TableColumnRemoveIcon />}
           disabled={!editorPossibled().deleteColumn()}
@@ -289,7 +294,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='افزودن خط'>
+      <Tooltip title="افزودن خط">
         <Button
           icon={<TableRowInsertIcon />}
           disabled={!editorPossibled().addRowAfter()}
@@ -297,7 +302,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='حذف خط'>
+      <Tooltip title="حذف خط">
         <Button
           icon={<TableRowRemoveIcon />}
           disabled={!editorPossibled().deleteRow()}
@@ -305,7 +310,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='حذف جدول'>
+      <Tooltip title="حذف جدول">
         <Button
           icon={<TableRemoveIcon />}
           disabled={!editorPossibled().deleteTable()}
@@ -313,44 +318,44 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Divider type='vertical' />
+      <Divider type="vertical" />
 
-      <Tooltip title='لیست نامرتب'>
+      <Tooltip title="لیست نامرتب">
         <Button
           icon={<UnorderedListOutlined />}
           className={cn(
-            editor.isActive('bulletList') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("bulletList") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleBulletList().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='لیست مرتب'>
+      <Tooltip title="لیست مرتب">
         <Button
           icon={<OrderedListOutlined />}
           className={cn(
-            editor.isActive('orderedList') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("orderedList") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleOrderedList().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Divider type='vertical' />
+      <Divider type="vertical" />
 
       <Popconfirm
-        placement='bottom'
+        placement="bottom"
         icon={null}
         title={
           <Input
-            placeholder='آدرس ویدیو'
+            placeholder="آدرس ویدیو"
             value={video}
             onChange={({ target: { value } }) => setVideo(value)}
           />
         }
         showCancel={false}
-        okText='افزودن'
+        okText="افزودن"
         okButtonProps={{
-          className: '!ms-0 w-full !text-sm',
+          className: "!ms-0 w-full !text-sm",
         }}
         onConfirm={() => {
           if (video) {
@@ -362,7 +367,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           }
         }}
       >
-        <Tooltip title='ویدیو'>
+        <Tooltip title="ویدیو">
           <Button
             icon={<YoutubeOutlined style={{ marginInlineStart: 2 }} />}
             {...defaultButtonProps}
@@ -370,34 +375,34 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
         </Tooltip>
       </Popconfirm>
       <Popconfirm
-        placement='bottom'
+        placement="bottom"
         icon={null}
         title={
           <Input
-            placeholder='آدرس لینک'
+            placeholder="آدرس لینک"
             value={href}
             onChange={({ target: { value } }) => setHref(value)}
           />
         }
         showCancel={false}
-        okText='افزودن'
+        okText="افزودن"
         okButtonProps={{
-          className: '!ms-0 w-full !text-sm',
+          className: "!ms-0 w-full !text-sm",
         }}
         onConfirm={() => {
-          if (href === '') {
-            editorFocused().extendMarkRange('link').unsetLink().run();
+          if (href === "") {
+            editorFocused().extendMarkRange("link").unsetLink().run();
           }
           if (href) {
-            editorFocused().extendMarkRange('link').setLink({ href }).run();
+            editorFocused().extendMarkRange("link").setLink({ href }).run();
           }
         }}
       >
-        <Tooltip title='لینک'>
+        <Tooltip title="لینک">
           <Button icon={<LinkOutlined />} {...defaultButtonProps} />
         </Tooltip>
       </Popconfirm>
-      <ImgCrop rotationSlider aspectSlider modalTitle='ویرایش عکس' quality={1}>
+      <ImgCrop rotationSlider aspectSlider modalTitle="ویرایش عکس" quality={1}>
         <Upload
           showUploadList={false}
           onChange={async ({ file: { originFileObj } }) => {
@@ -407,62 +412,74 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
             }
           }}
         >
-          <Tooltip title='تصویر'>
+          <Tooltip title="تصویر">
             <Button icon={<FileImageOutlined />} {...defaultButtonProps} />
           </Tooltip>
         </Upload>
       </ImgCrop>
-      <Divider type='vertical' />
+      <Divider type="vertical" />
 
-      <Tooltip title='راست چین'>
+      <Tooltip title="راست چین">
         <Button
           icon={<AlignRightOutlined />}
           className={cn(
-            editor.isActive({ textAlign: 'right' })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive({ textAlign: "right" })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
-          onClick={() => editorFocused().setTextAlign('right').run()}
+          onClick={() => editorFocused().setTextAlign("right").run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='وسط چین'>
+      <Tooltip title="وسط چین">
         <Button
           icon={<AlignCenterOutlined />}
           className={cn(
-            editor.isActive({ textAlign: 'center' })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive({ textAlign: "center" })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
-          onClick={() => editorFocused().setTextAlign('center').run()}
+          onClick={() => editorFocused().setTextAlign("center").run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='چپ چین'>
+      <Tooltip title="چپ چین">
         <Button
           icon={<AlignLeftOutlined />}
           className={cn(
-            editor.isActive({ textAlign: 'left' })
-              ? '!bg-zinc-200'
-              : '!text-zinc-400',
+            editor.isActive({ textAlign: "left" })
+              ? "!bg-zinc-200"
+              : "!text-zinc-400"
           )}
-          onClick={() => editorFocused().setTextAlign('left').run()}
+          onClick={() => editorFocused().setTextAlign("left").run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Divider type='vertical' />
+      <Divider type="vertical" />
 
-      <Tooltip title='کد'>
+      <Tooltip title="سوالات متداول">
+        <Button
+          icon={<QuestionOutlined />}
+          className={cn(
+            editor.isActive("faqSingleItem") ? "!bg-zinc-200" : "!text-zinc-400"
+          )}
+          onClick={() => editorFocused().insertFaqSingleItem().run()}
+          {...defaultButtonProps}
+        />
+      </Tooltip>
+      <Divider type="vertical" />
+
+      <Tooltip title="کد">
         <Button
           icon={<InlineCodeIcon />}
           className={cn(
-            editor.isActive('codeBlock') ? '!bg-zinc-200' : '!text-zinc-400',
+            editor.isActive("codeBlock") ? "!bg-zinc-200" : "!text-zinc-400"
           )}
           onClick={() => editorFocused().toggleCodeBlock().run()}
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='ناانجام'>
+      <Tooltip title="ناانجام">
         <Button
           icon={<UndoOutlined />}
           disabled={!editorChainPossibled().undo().run()}
@@ -470,7 +487,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
           {...defaultButtonProps}
         />
       </Tooltip>
-      <Tooltip title='بازانجام'>
+      <Tooltip title="بازانجام">
         <Button
           icon={<RedoOutlined />}
           disabled={!editorChainPossibled().redo().run()}
@@ -497,18 +514,21 @@ type ExtensionsOptions = {
   link: Partial<LinkOptions>;
   image: Partial<ImageOptions>;
   placeholder: Partial<PlaceholderOptions>;
+  faqSingleItem: Partial<typeof FaqSingleItem>;
+  faqQuestion: Partial<typeof FaqQuestion>;
+  faqAnswer: Partial<typeof FaqAnswer>;
 };
 
 type Options = Parameters<typeof useEditor>[0] &
-  Record<'extensionsOptions', Partial<ExtensionsOptions>>;
+  Record<"extensionsOptions", Partial<ExtensionsOptions>>;
 
 type DependencyList = Parameters<typeof useEditor>[1];
 
-type RichTextEditorProps = React.ComponentPropsWithoutRef<'div'> &
-  Partial<Record<'options', Partial<Options>> & Record<'deps', DependencyList>>
+type RichTextEditorProps = React.ComponentPropsWithoutRef<"div"> &
+  Partial<Record<"options", Partial<Options>> & Record<"deps", DependencyList>>;
 
 const RichTextEditor = React.forwardRef<
-  React.ElementRef<'div'>,
+  React.ElementRef<"div">,
   RichTextEditorProps
 >(
   (
@@ -520,12 +540,21 @@ const RichTextEditor = React.forwardRef<
       className,
       ...props
     },
-    
-    ref,
+
+    ref
   ) => {
     const {
       extensionsOptions = {
-        starterKit: {},
+        FaqQuestion: {},
+        // CustomListItem,
+        // CustomBulletList,
+        // CustomOrderedList,
+        FaqAnswer,
+        FaqSingleItem,
+        starterKit: {
+          // bulletList:false,
+          // listItem:false
+        },
         textStyle: {},
         textAlign: {},
         color: {},
@@ -546,8 +575,8 @@ const RichTextEditor = React.forwardRef<
       starterKit,
       textStyle,
       textAlign = {
-        defaultAlignment: 'right',
-        types: ['heading', 'paragraph'],
+        defaultAlignment: "right",
+        types: ["heading", "paragraph"],
       },
       color = { types: [TextStyle.name, ListItem.name] },
       underline,
@@ -584,11 +613,14 @@ const RichTextEditor = React.forwardRef<
         Link.configure(link),
         Image.configure(image),
         Placeholder.configure(placeholder),
+        FaqQuestion.configure(FaqQuestion),
+        FaqAnswer.configure(FaqAnswer),
+        FaqSingleItem.configure(FaqSingleItem),
       ],
       editorProps = {
         attributes: {
           class:
-            'h-96 min-h-28 resize-y overflow-y-auto p-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--ant-color-primary-hover)]',
+            "h-96 min-h-28 resize-y overflow-y-auto p-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--ant-color-primary-hover)]",
         },
       },
       ...otherEditorOptions
@@ -604,13 +636,13 @@ const RichTextEditor = React.forwardRef<
     if (!editor) return null;
 
     return (
-      <div ref={ref} className={cn('rounded border', className)} {...props}>
+      <div ref={ref} className={cn("rounded border", className)} {...props}>
         <EditorToolbar editor={editor} />
-        <EditorContent content='<h1>hello</h1>' editor={editor}  />
+        <EditorContent content="<h1>hello</h1>" editor={editor} />
       </div>
     );
-  },
+  }
 );
-RichTextEditor.displayName = 'RichTextEditor';
+RichTextEditor.displayName = "RichTextEditor";
 
 export { RichTextEditor };

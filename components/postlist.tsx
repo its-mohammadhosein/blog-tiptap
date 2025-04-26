@@ -49,7 +49,7 @@ export function PostTable({ posts }: Props) {
                   Edit
                 </Link>
                 <Link
-                  href={`/preview/${post.id}`} // Replace with actual URL
+                  href={`/preview/${post.slug}`} // Replace with actual URL
                   className="text-green-500 hover:underline"
                 >
                   Preview

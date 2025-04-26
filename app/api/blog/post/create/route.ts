@@ -18,10 +18,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const { title, content, authorId } = parsed.data;
+    const { title, content, authorId, slug } = parsed.data;
 
-    const slug = generateSlug(title);
-    const slugValidation = SlugSchema.safeParse(slug);
+    const Genslug = slug ? slug : generateSlug(title);
+    const slugValidation = SlugSchema.safeParse(Genslug);
 
     if (!slugValidation.success) {
       return NextResponse.json(
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const post = await Prisma.post.create({
       data: {
         title,
-        slug,
+        slug: slugValidation.data,
         content,
         authorId: Number(authorId),
       },

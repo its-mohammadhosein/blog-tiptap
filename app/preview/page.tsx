@@ -2,11 +2,12 @@
 // import { PostTable } from "@/components/PostTable";
 
 import { PostTable } from "@/components/postlist";
+import { links } from "../lib/links";
 
 // Server-side fetch for posts
 export default async function PostsPage() {
   // Fetching the posts from the API endpoint
-  const res = await fetch("http://localhost:3000/api/blog/post"); // Adjust the base URL if needed
+  const res = await fetch(`${links.baseUrl}/api/blog/post`); // Adjust the base URL if needed
   if (!res.ok) {
     throw new Error("Failed to fetch posts");
   }
