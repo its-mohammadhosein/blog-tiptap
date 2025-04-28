@@ -14,8 +14,15 @@ export default async function page({ params }: { params: { post: string } }) {
 
   return (
     <div className="w-full h-screen flex justify-center">
-      <div className="max-w-[1280px] w-full min-h-[450px] mt-12 ">
-        <EditorBlogPost postContent={data} />
+      <div className="w-full max-w-[1280px] flex mt-12 gap-6">
+        <div className="w-[80%]  min-h-[450px]  ">
+          <EditorBlogPost postContent={data} />
+        </div>
+        <div className="w-[20%] ">
+          <div className="side bg-red-300 p-2 h-full">
+            {/* creating sidebar for author and title and slug and other things */}
+          </div>
+        </div>
       </div>
     </div>
   );

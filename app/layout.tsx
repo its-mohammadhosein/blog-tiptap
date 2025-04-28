@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import NextAuthSessionProvider from "@/components/NextauthProvider";
+import { Toaster } from "@/components/ui/toaster";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -45,8 +46,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${vazir.className} antialiased`}
       >
         <NextAuthSessionProvider>
-          <JotaiProvider>{children}</JotaiProvider>
+          <JotaiProvider>{children}
+          </JotaiProvider>
         </NextAuthSessionProvider>
+          <Toaster />
       </body>
     </html>
   );

@@ -12,7 +12,12 @@ enum Role {
   writer
   admin
 }
-
+enum PublishStatus {
+  PUBLISHED
+  SCHEDULED
+  DRAFT
+  REVIEW
+}
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -22,15 +27,22 @@ model User {
   updatedAt DateTime @updatedAt
   posts     Post[]
 }
+
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  slug      String   @unique
-  content   String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
+  id            Int            @id @default(autoincrement())
+  title         String
+  slug          String         @unique
+  content       String
+  author        User           @relation(fields: [authorId], references: [id])
+  authorId      Int
+  createdAt     DateTime       @default(now())
+  indexed       Boolean        @default(false)
+  publishStatus PublishStatus  @default(DRAFT)
+
+  @@index([indexed])
 }
+
+
 
 model Image {
   id        Int      @id @default(autoincrement())

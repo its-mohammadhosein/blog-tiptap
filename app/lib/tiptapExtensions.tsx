@@ -173,11 +173,25 @@ export const FaqQuestion = Node.create({
   content: "text*",
   isolating: true, // << Add this!
   parseHTML() {
-    return [{ tag: "faq-question" }];
+    return [
+      {
+        tag: "faq-question",
+        getAttrs: (dom) => ({
+          // Add any attributes you want to preserve
+        }),
+      },
+    ];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["faq-question", HTMLAttributes, 0];
+  renderHTML({ node, HTMLAttributes }) {
+    return [
+      "faq-question",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "faq-question",
+        class: "faq-question-content",
+      }),
+      0, // This renders the content
+    ];
   },
 
   addProseMirrorPlugins() {
@@ -197,8 +211,8 @@ export const FaqQuestion = Node.create({
           const targetPos = faqItemPos + faqQuestionNode.nodeSize + 1;
 
           if (dispatch) {
-            const selection = Selection.near(state.doc.resolve(targetPos));
-            dispatch(state.tr.setSelection(selection).scrollIntoView());
+            // const selection = Selection.near(state.doc.resolve(targetPos));
+            state.tr.deleteSelection();
             return true;
           }
 
@@ -207,7 +221,30 @@ export const FaqQuestion = Node.create({
       }),
     ];
   },
+  addKeyboardShortcuts() {
+    return {
+      Backspace: ({ editor }) => {
+        const { state } = editor;
+        const { $from } = state.selection;
+        const node = $from.node();
 
+        if (node.type.name !== "faqQuestion") return false;
+
+        if (node.textContent.length > 1) {
+          // Allow normal deleting if more than 1 char
+          return false;
+        }
+
+        if (node.textContent.length === 1) {
+          // Let the character delete normally
+          return false;
+        }
+
+        // If it's already empty, now delete the FAQ item
+        return editor.commands.deleteFaqSingleItem();
+      },
+    };
+  },
   addNodeView() {
     return ReactNodeViewRenderer(() => (
       <NodeViewWrapper as="div" className="faq-question">
@@ -226,13 +263,26 @@ export const FaqAnswer = Node.create({
   content: "text*",
   isolating: true, // << Add this too!
   parseHTML() {
-    return [{ tag: "faq-answer" }];
+    return [
+      {
+        tag: "faq-answer",
+        getAttrs: (dom) => ({
+          // Add any attributes you want to preserve
+        }),
+      },
+    ];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["faq-answer", mergeAttributes(HTMLAttributes), 0];
+  renderHTML({ node, HTMLAttributes }) {
+    return [
+      "faq-answer",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "faq-answer",
+        class: "faq-answer-content",
+      }),
+      0, // This renders the content
+    ];
   },
-
   addProseMirrorPlugins() {
     return [keymap({})];
   },
@@ -259,7 +309,15 @@ export const FaqSingleItem = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["faq-single-item", mergeAttributes(HTMLAttributes), 0];
+    // Single content hole (0) for both question and answer
+    return [
+      "faq-single-item",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "faq-single-item",
+        class: "faq-item",
+      }),
+      0,
+    ];
   },
 
   addNodeView() {
@@ -288,6 +346,19 @@ export const FaqSingleItem = Node.create({
               },
             ],
           });
+        },
+      deleteFaqSingleItem:
+        () =>
+        ({ commands, state }) => {
+          const { $from } = state.selection;
+          const parent = $from.node(-1);
+
+          if (!parent || parent.type.name !== "faqSingleItem") return false;
+
+          const fromPos = $from.before(-1);
+          const toPos = $from.after(-1);
+
+          return commands.deleteRange({ from: fromPos, to: toPos });
         },
     };
   },

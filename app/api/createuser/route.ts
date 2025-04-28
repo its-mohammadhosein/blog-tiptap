@@ -2,10 +2,9 @@ import { Prisma } from "@/app/lib/Prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 export async function POST(req: NextRequest) {
-//   const data = await req.json();
-//   console.log(data);
+  //   const data = await req.json();
+  //   console.log(data);
 
- 
   const { email, password } = await req.json();
   if (!email || !password) {
     return NextResponse.json(
@@ -22,6 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         message: "User Exists",
+        statusKey: "exist",
       },
       { status: 400 }
     );
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(
     {
       message: "UnConfirmed",
+      statusKey: "failed",
     },
     { status: 400 }
   );
